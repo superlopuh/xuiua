@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "uiua-xdsl"
+version = "0.1.0"
+description = "A uiua compiler written in Python"
+authors = ["Sasha Lopoukhine <sasha@lopoukhine.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+xdsl = { git = "https://github.com/xdslproject/xdsl.git", rev = "sasha/jax/jit" }
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
