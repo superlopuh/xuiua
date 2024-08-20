@@ -8,11 +8,11 @@
 # AST-NEXT:    Words(
 # AST-NEXT:      [
 # AST-NEXT:        [
-# AST-NEXT:          56-57: <spaces>,
 # AST-NEXT:          57-58: "1",
 # AST-NEXT:          58-59: <spaces>,
 # AST-NEXT:          59-60: "2",
-# AST-NEXT:          60-61: <spaces>,
+# AST-NEXT:        ],
+# AST-NEXT:        [
 # AST-NEXT:          61-62: "1",
 # AST-NEXT:          62-63: <spaces>,
 # AST-NEXT:          63-70: arr(
@@ -22,7 +22,8 @@
 # AST-NEXT:            <spaces>,
 # AST-NEXT:            "4",
 # AST-NEXT:          ),
-# AST-NEXT:          70-71: <spaces>,
+# AST-NEXT:        ],
+# AST-NEXT:        [
 # AST-NEXT:          71-78: arr(
 # AST-NEXT:            "1",
 # AST-NEXT:            <spaces>,
@@ -38,8 +39,6 @@
 # AST-NEXT:            <spaces>,
 # AST-NEXT:            "6",
 # AST-NEXT:          ),
-# AST-NEXT:          86-87: <spaces>,
-# AST-NEXT:          87-88: <spaces>,
 # AST-NEXT:        ],
 # AST-NEXT:      ]
 # AST-NEXT:    ),

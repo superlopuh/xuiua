@@ -35,7 +35,7 @@ class ParseError(Exception):
 
 NEWLINE = re.compile(r"\n")
 NOT_NEWLINE = re.compile(r"[^\n]*")
-SPACES = re.compile(r"\s")
+SPACES = re.compile(r"[^\S\n]")
 NUMBER = re.compile(r"\d+(\.\d+)?")
 PRIMITIVE = re.compile("|".join(re.escape(p.value) for p in PrimitiveSpelling))
 
