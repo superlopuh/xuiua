@@ -191,7 +191,8 @@ class Comment(NamedTuple):
     value: str
 
     def print(self, printer: Printer) -> None:
-        raise NotImplementedError
+        printer.print("#")
+        printer.print(self.value)
 
 
 class Spaces(NamedTuple):

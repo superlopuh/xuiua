@@ -12,6 +12,34 @@ files = [
 ]
 
 [[package]]
+name = "filecheck"
+version = "1.0.0"
+description = "A Python-native clone of LLVMs FileCheck tool"
+optional = false
+python-versions = "<4.0,>=3.10"
+files = [
+    {file = "filecheck-1.0.0-py3-none-any.whl", hash = "sha256:0d44ad29652a3f914a80806b8874cbf77ccc9023e0fb24f0dd94700a22248224"},
+    {file = "filecheck-1.0.0.tar.gz", hash = "sha256:b37ec8cc1733d2138490588dbceabf90666868a00e191b8ae066436f0796380a"},
+]
+
+[[package]]
+name = "filecheckize"
+version = "0.1"
+description = "FileCheck generator"
+optional = false
+python-versions = "*"
+files = [
+    {file = "filecheckize-0.1-py3-none-any.whl", hash = "sha256:78b6f94364c512bcf73eb4f14539ff494cc313650827d823eac8ceb7f3c76b0c"},
+    {file = "filecheckize-0.1.tar.gz", hash = "sha256:cc4aabf0e0036d268e31db3f44c0f1179572f70691155c991ee8b7430889515c"},
+]
+
+[package.dependencies]
+pip = "<25.0"
+
+[package.extras]
+extras = ["black (<24.5)", "coverage", "filecheck (<0.025)", "isort (<5.14)", "lit (<18.2)", "pyright (<1.1.368)", "ruff (<0.5)", "toml (<0.11)"]
+
+[[package]]
 name = "immutabledict"
 version = "4.2.0"
 description = "Immutable wrapper around dictionaries (a fork of frozendict)"
@@ -31,6 +59,17 @@ python-versions = ">=3.7"
 files = [
     {file = "iniconfig-2.0.0-py3-none-any.whl", hash = "sha256:b6a85871a79d2e3b22d2d1b94ac2824226a63c6b741c88f7ae975f18b6778374"},
     {file = "iniconfig-2.0.0.tar.gz", hash = "sha256:2d91e135bf72d31a410b17c16da610a82cb55f6b0477d1a902134b24a455b8b3"},
+]
+
+[[package]]
+name = "lit"
+version = "18.1.8"
+description = "A Software Testing Tool"
+optional = false
+python-versions = "*"
+files = [
+    {file = "lit-18.1.8-py3-none-any.whl", hash = "sha256:a873ff7acd76e746368da32eb7355625e2e55a2baaab884c9cc130f2ee0300f7"},
+    {file = "lit-18.1.8.tar.gz", hash = "sha256:47c174a186941ae830f04ded76a3444600be67d5e5fb8282c3783fba671c4edb"},
 ]
 
 [[package]]
@@ -56,6 +95,17 @@ python-versions = ">=3.8"
 files = [
     {file = "packaging-24.1-py3-none-any.whl", hash = "sha256:5b8f2217dbdbd2f7f384c41c628544e6d52f2d0f53c6d0c3ea61aa5d1d7ff124"},
     {file = "packaging-24.1.tar.gz", hash = "sha256:026ed72c8ed3fcce5bf8950572258698927fd1dbda10a5e981cdf0ac37f4f002"},
+]
+
+[[package]]
+name = "pip"
+version = "24.2"
+description = "The PyPA recommended tool for installing Python packages."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "pip-24.2-py3-none-any.whl", hash = "sha256:2cd581cf58ab7fcfca4ce8efa6dcacd0de5bf8d0a3eb9ec927e07405f4d9e2a2"},
+    {file = "pip-24.2.tar.gz", hash = "sha256:5b5e490b5e9cb275c879595064adce9ebd31b854e3e803740b72f9ccf34a45b8"},
 ]
 
 [[package]]
@@ -135,4 +185,4 @@ resolved_reference = "34d1c598b381a6fbb958e16e363213636279aca7"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "0d340ed64902d253cdc1441c79dbbb0172cc7c6aca0fdd10f048e7f972711e9a"
+content-hash = "fd275a34336eb82c631f7fb4d0dfecb15e29fe3bea8bdcfb9e83e66cbfb16376"

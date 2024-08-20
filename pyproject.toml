@@ -16,6 +16,9 @@ xdsl = { git = "https://github.com/xdslproject/xdsl.git", rev = "sasha/jax/jit" 
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.2"
+filecheckize = "^0.1"
+lit = "^18.1.8"
+filecheck = "^1.0.0"
 
 [build-system]
 requires = ["poetry-core"]

@@ -18,6 +18,9 @@ from xuiua.ast import (
 T = TypeVar("T")
 
 
+SKIP_COMMENT = True
+
+
 class ParseError(Exception):
     position: Position
     message: str
@@ -29,7 +32,7 @@ class ParseError(Exception):
 
 
 NEWLINE = re.compile(r"\n")
-NOT_NEWLINE = re.compile(r"[^\n]")
+NOT_NEWLINE = re.compile(r"[^\n]*")
 SPACES = re.compile(r"\s")
 NUMBER = re.compile(r"\d+(\.\d+)?")
 
@@ -143,7 +146,8 @@ class Parser:
         value = self.expect(
             "comment", lambda parser: parser.parse_optional_pattern(NOT_NEWLINE)
         )
-        return Comment(value)
+        comment = Comment(value)
+        return None if SKIP_COMMENT else comment
 
     def parse_optional_spaces(self) -> Spaces | None:
         if self.parse_optional_pattern(SPACES) is not None:
@@ -157,15 +161,16 @@ class Parser:
         Parses consecutive words, delimited by newlines.
         Stops whenever it encounters a newline.
         """
-        lines = self.parse_many(Parser.parse_optional_word)
-        return lines
+        line = self.parse_many(Parser.parse_optional_word)
+        return line
 
     def parse_word_lines(self) -> tuple[tuple[Spanned[Word], ...], ...]:
         lines = self.parse_many_separated(
             Parser.parse_word_line,
             lambda parser: parser.parse_optional_pattern(NEWLINE),
         )
-        return lines
+        # Skip empty lines
+        return tuple(line for line in lines if line)
 
     # Items
 
