@@ -106,10 +106,27 @@ class BindingItem(NamedTuple):
     public: bool
     array_macro: bool
     signature: Signature | None
-    words: tuple[Word, ...]
+    words: tuple[Spanned[Word], ...]
 
     def print(self, printer: Printer) -> None:
-        raise NotImplementedError
+        printer.print("Binding(")
+        with printer.indented():
+            printer.print(f"\nname: {self.name},")
+            printer.print(f"\npublic: {self.public},")
+            printer.print(f"\narray_macro: {self.array_macro},")
+            printer.print("\nsignature: ")
+            if self.signature is None:
+                printer.print("None")
+            else:
+                self.signature.print(printer)
+            printer.print("\nwords: [")
+            with printer.indented():
+                for word in self.words:
+                    printer.print("\n")
+                    word.print(printer, print_word)
+                    printer.print(",")
+            printer.print("\n],")
+        printer.print("\n)")
 
 
 class ImportItem(NamedTuple):

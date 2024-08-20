@@ -4,6 +4,7 @@ from xdsl.parser import Input, Span
 from xdsl.utils.lexer import Position
 
 from xuiua.ast import (
+    BindingItem,
     Comment,
     Item,
     Items,
@@ -38,6 +39,17 @@ NOT_NEWLINE = re.compile(r"[^\n]*")
 SPACES = re.compile(r"[^\S\n]")
 NUMBER = re.compile(r"\d+(\.\d+)?")
 PRIMITIVE = re.compile("|".join(re.escape(p.value) for p in PrimitiveSpelling))
+IDENTIFIER = re.compile(r"[a-zA-Z]\w+")
+"""
+A regular expression for an identifier, currently letter followed by a number of letters or numbers.
+
+This is the actual UIUA impl, eventually would be good to move to it:
+``` rust
+pub fn is_ident_char(c: char) -> bool {
+    c.is_alphabetic() && !"ⁿₙπτηℂλ".contains(c) || SUBSCRIPT_NUMS.contains(&c)
+}
+```
+"""
 
 
 class Parser:
@@ -193,9 +205,35 @@ class Parser:
             return None
         return WordsItem(lines)
 
+    def parse_binding_item(self) -> BindingItem | None:
+        pos = self.pos
+        if (name := self.parse_optional_pattern(IDENTIFIER)) is None:
+            return None
+        self.parse_optional_spaces()
+        arrow_start_pos = self.pos
+        if self.parse_optional_chars("←") is None:
+            self.pos = pos
+            return None
+        arrow_end_pos = self.pos
+
+        words = self.parse_word_line()
+
+        self.parse_optional_pattern(NEWLINE)
+
+        return BindingItem(
+            name,
+            Span(arrow_start_pos, arrow_end_pos, self.input),
+            True,
+            False,
+            None,
+            words,
+        )
+
     def parse_optional_item(self) -> Item | None:
         if not self.remaining:
             return None
+        if (binding := self.parse_binding_item()) is not None:
+            return binding
         pos = self.pos
         words_item = self.parse_words_item()
         if pos == self.pos:
