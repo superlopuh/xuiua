@@ -1,11 +1,7 @@
-import abc
+from __future__ import annotations
+
 from typing import Generic, NamedTuple, TypeAlias, TypeVar
 from xdsl.parser import Span as CodeSpan
-
-from dataclasses import dataclass
-
-
-class Word(abc.ABC): ...
 
 
 class Ident:
@@ -93,20 +89,18 @@ Item: TypeAlias = ScopedModule | WordsItem | BindingItem | ModuleItem
 # region Word
 
 
-@dataclass
-class Number(Word):
+class Number(NamedTuple):
     str_val: str
     float_val: float
 
 
-@dataclass
-class Array(Word):
+class Array(NamedTuple):
     "A stack array notation term"
 
     signature: Spanned[Signature] | None
     "The array's inner signature"
 
-    lines: list[list[Spanned["Word"]]]
+    lines: list[list[Spanned[Word]]]
     "The words in the array"
 
     boxes: bool
@@ -116,15 +110,15 @@ class Array(Word):
     "Whether a closing bracket was found"
 
 
-@dataclass
-class Comment(Word):
+class Comment(NamedTuple):
     value: str
 
 
-@dataclass
-class Spaces(Word):
+class Spaces(NamedTuple):
     "Only used for formatting"
 
+
+Word: TypeAlias = Number | Array | Comment | Spaces
 
 # pub enum Word {
 #     -Number(String, f64),
