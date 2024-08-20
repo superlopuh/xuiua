@@ -52,26 +52,26 @@ class Parser:
 
     # Helpers
 
-    def parse_many(self, element: Callable[["Parser"], T | None]) -> list[T]:
+    def parse_many(self, element: Callable[["Parser"], T | None]) -> tuple[T, ...]:
         if (first := element(self)) is None:
-            return []
+            return ()
         res = [first]
         while (el := element(self)) is not None:
             res.append(el)
-        return res
+        return tuple(res)
 
     def parse_many_separated(
         self,
         element: Callable[["Parser"], T | None],
         separator: Callable[["Parser"], Any | None],
-    ) -> list[T]:
+    ) -> tuple[T, ...]:
         if (first := element(self)) is None:
-            return []
+            return ()
         res = [first]
         while separator(self) is not None:
             el = self.expect("element", element)
             res.append(el)
-        return res
+        return tuple(res)
 
     def parse_optional_list(
         self,
@@ -142,7 +142,7 @@ class Parser:
     def parse_optional_word(self) -> Spanned[Word] | None:
         return self.spanned(lambda parser: parser.parse_one_of(WORD_PARSERS))
 
-    def parse_word_line(self) -> list[Spanned[Word]]:
+    def parse_word_line(self) -> tuple[Spanned[Word], ...]:
         """
         Parses consecutive words, delimited by newlines.
         Stops whenever it encounters a newline.
@@ -150,7 +150,7 @@ class Parser:
         lines = self.parse_many(Parser.parse_optional_word)
         return lines
 
-    def parse_word_lines(self) -> list[list[Spanned[Word]]]:
+    def parse_word_lines(self) -> tuple[tuple[Spanned[Word], ...], ...]:
         lines = self.parse_many_separated(
             Parser.parse_word_line,
             lambda parser: parser.parse_optional_pattern(NEWLINE),
@@ -167,7 +167,7 @@ class Parser:
         if self.remaining:
             return self.parse_words_item()
 
-    def parse_items(self) -> list[Item]:
+    def parse_items(self) -> tuple[Item, ...]:
         return self.parse_many(Parser.parse_optional_item)
 
 

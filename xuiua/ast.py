@@ -36,7 +36,7 @@ class ImportLine:
     tilde_span: CodeSpan
     "The span of the ~"
 
-    items: list[Spanned[Ident]]
+    items: tuple[Spanned[Ident], ...]
     "The imported items"
 
 
@@ -44,7 +44,7 @@ class ScopedModule(NamedTuple):
     open_span: CodeSpan
     "The span of the opening delimiter"
     kind: ModuleKind
-    items: list["Item"]
+    items: tuple[Item, ...]
     imports: ImportLine | None
     code_span: CodeSpan
     "The span of the closing delimiter"
@@ -53,7 +53,7 @@ class ScopedModule(NamedTuple):
 class WordsItem(NamedTuple):
     """Just some code."""
 
-    lines: list[list[Spanned[Word]]]
+    lines: tuple[tuple[Spanned[Word], ...], ...]
 
 
 class BindingItem(NamedTuple):
@@ -62,7 +62,7 @@ class BindingItem(NamedTuple):
     public: bool
     array_macro: bool
     signature: Signature | None
-    words: list[Word]
+    words: tuple[Word, ...]
 
 
 class ImportItem(NamedTuple):
@@ -75,7 +75,7 @@ class ImportItem(NamedTuple):
     path: Spanned[str]
     "The import path"
 
-    lines: list[ImportLine | None]
+    lines: tuple[ImportLine | None, ...]
     "The import lines"
 
 
@@ -100,7 +100,7 @@ class Array(NamedTuple):
     signature: Spanned[Signature] | None
     "The array's inner signature"
 
-    lines: list[list[Spanned[Word]]]
+    lines: tuple[tuple[Spanned[Word], ...], ...]
     "The words in the array"
 
     boxes: bool

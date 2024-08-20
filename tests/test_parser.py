@@ -23,13 +23,13 @@ def test_parse_array():
 
     assert parser.parse_optional_array() == Array(
         None,
-        [
-            [
+        (
+            (
                 s(2, 5, n("1.0")),
                 s(5, 6, Spaces()),
                 s(6, 9, n("2.3")),
-            ]
-        ],
+            ),
+        ),
         False,
         True,
     )
@@ -45,22 +45,22 @@ def test_parse_items():
     def n(f: str) -> Number:
         return Number(f, float(f))
 
-    bla = [
+    assert parser.parse_items() == (
         WordsItem(
-            [
-                [
+            (
+                (
                     s(
                         1,
                         10,
                         Array(
                             None,
-                            [
-                                [
+                            (
+                                (
                                     s(2, 5, n("1.0")),
                                     s(5, 6, Spaces()),
                                     s(6, 9, n("2.3")),
-                                ]
-                            ],
+                                ),
+                            ),
                             False,
                             True,
                         ),
@@ -71,21 +71,18 @@ def test_parse_items():
                         16,
                         Array(
                             None,
-                            [
-                                [
+                            (
+                                (
                                     s(12, 13, n("5")),
                                     s(13, 14, Spaces()),
                                     s(14, 15, n("6")),
-                                ]
-                            ],
+                                ),
+                            ),
                             False,
                             True,
                         ),
                     ),
-                ]
-            ]
-        )
-    ]
-
-    blo = parser.parse_items()
-    assert bla == blo
+                ),
+            ),
+        ),
+    )
