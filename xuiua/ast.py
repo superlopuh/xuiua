@@ -1,7 +1,10 @@
 from __future__ import annotations
 
-from typing import Generic, NamedTuple, TypeAlias, TypeVar
+
+from typing import Callable, Generic, NamedTuple, TypeAlias, TypeVar
 from xdsl.parser import Span as CodeSpan
+
+from xuiua.printer import Printer
 
 
 class Ident:
@@ -9,12 +12,18 @@ class Ident:
 
     name: str
 
+    def print(self, printer: Printer):
+        printer.print(self.name)
+
 
 class Signature:
     args: int
     "The number of arguments the function pops off the stack."
     outputs: int
     "The number of values the function pushes onto the stack."
+
+    def print(self, printer: Printer):
+        printer.print(f"{self.args}|{self.outputs}")
 
 
 T = TypeVar("T")
@@ -24,9 +33,21 @@ class Spanned(Generic[T], NamedTuple):
     value: T
     span: CodeSpan
 
+    @staticmethod
+    def _print_span(code_span: CodeSpan, printer: Printer):
+        printer.print(f"{code_span.start}-{code_span.end}")
+
+    def print(self, printer: Printer, value_print: Callable[[T, Printer], None]):
+        Spanned._print_span(self.span, printer)
+        printer.print(": ")
+        value_print(self.value, printer)
+
 
 class NamedModuleKind(NamedTuple):
     named_module: Spanned[Ident]
+
+    def print(self, printer: Printer):
+        self.named_module.print(printer, Ident.print)
 
 
 class ModuleKind: ...
@@ -39,6 +60,9 @@ class ImportLine:
     items: tuple[Spanned[Ident], ...]
     "The imported items"
 
+    def print(self, printer: Printer) -> None:
+        raise NotImplementedError
+
 
 class ScopedModule(NamedTuple):
     open_span: CodeSpan
@@ -49,11 +73,30 @@ class ScopedModule(NamedTuple):
     code_span: CodeSpan
     "The span of the closing delimiter"
 
+    def print(self, printer: Printer) -> None:
+        raise NotImplementedError
+
 
 class WordsItem(NamedTuple):
     """Just some code."""
 
     lines: tuple[tuple[Spanned[Word], ...], ...]
+
+    def print(self, printer: Printer):
+        with printer.indented():
+            printer.print("Words(")
+            printer.print("\n[")
+            with printer.indented():
+                for line in self.lines:
+                    printer.print("\n[")
+                    with printer.indented():
+                        for item in line:
+                            printer.print("\n")
+                            item.print(printer, print_word)
+                            printer.print(",")
+                    printer.print("\n],")
+            printer.print("\n]")
+        printer.print("\n)")
 
 
 class BindingItem(NamedTuple):
@@ -63,6 +106,9 @@ class BindingItem(NamedTuple):
     array_macro: bool
     signature: Signature | None
     words: tuple[Word, ...]
+
+    def print(self, printer: Printer) -> None:
+        raise NotImplementedError
 
 
 class ImportItem(NamedTuple):
@@ -82,6 +128,22 @@ class ImportItem(NamedTuple):
 class ModuleItem(NamedTuple):
     scoped_module: ScopedModule
 
+    def print(self, printer: Printer) -> None:
+        raise NotImplementedError
+
+
+class Items(NamedTuple):
+    items: tuple[Item, ...]
+
+    def print(self, printer: Printer):
+        with printer.indented():
+            printer.print("[")
+            for item in self.items:
+                printer.print("\n")
+                item.print(printer)
+                printer.print(",")
+        printer.print("\n]\n")
+
 
 Item: TypeAlias = ScopedModule | WordsItem | BindingItem | ModuleItem
 
@@ -92,6 +154,11 @@ Item: TypeAlias = ScopedModule | WordsItem | BindingItem | ModuleItem
 class Number(NamedTuple):
     str_val: str
     float_val: float
+
+    def print(self, printer: Printer) -> None:
+        printer.print('"')
+        printer.print(self.str_val)
+        printer.print('"')
 
 
 class Array(NamedTuple):
@@ -109,16 +176,37 @@ class Array(NamedTuple):
     closed: bool
     "Whether a closing bracket was found"
 
+    def print(self, printer: Printer) -> None:
+        printer.print("arr(")
+        assert len(self.lines) == 1
+        with printer.indented():
+            for spanned_word in self.lines[0]:
+                printer.print("\n")
+                spanned_word.value.print(printer)
+                printer.print(",")
+        printer.print("\n)")
+
 
 class Comment(NamedTuple):
     value: str
+
+    def print(self, printer: Printer) -> None:
+        raise NotImplementedError
 
 
 class Spaces(NamedTuple):
     "Only used for formatting"
 
+    def print(self, printer: Printer) -> None:
+        printer.print("<spaces>")
+
 
 Word: TypeAlias = Number | Array | Comment | Spaces
+
+
+def print_word(word: Word, printer: Printer) -> None:
+    word.print(printer)
+
 
 # pub enum Word {
 #     -Number(String, f64),

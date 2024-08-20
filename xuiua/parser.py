@@ -3,7 +3,17 @@ from typing import Any, Callable, Sequence, TypeVar
 from xdsl.parser import Input, Span
 from xdsl.utils.lexer import Position
 
-from xuiua.ast import Comment, Item, Number, Spaces, Word, WordsItem, Array, Spanned
+from xuiua.ast import (
+    Comment,
+    Item,
+    Items,
+    Number,
+    Spaces,
+    Word,
+    WordsItem,
+    Array,
+    Spanned,
+)
 
 T = TypeVar("T")
 
@@ -167,8 +177,9 @@ class Parser:
         if self.remaining:
             return self.parse_words_item()
 
-    def parse_items(self) -> tuple[Item, ...]:
-        return self.parse_many(Parser.parse_optional_item)
+    def parse_items(self) -> Items:
+        items = self.parse_many(Parser.parse_optional_item)
+        return Items(items)
 
 
 WORD_PARSERS = (

@@ -1,7 +1,7 @@
 from typing import Any
 
 from xdsl.parser import Span
-from xuiua.ast import Array, Number, Spaces, Spanned, WordsItem
+from xuiua.ast import Array, Number, Spaces, Spanned, WordsItem, Items
 from xuiua.parser import Parser
 
 
@@ -45,44 +45,46 @@ def test_parse_items():
     def n(f: str) -> Number:
         return Number(f, float(f))
 
-    assert parser.parse_items() == (
-        WordsItem(
-            (
+    assert parser.parse_items() == Items(
+        (
+            WordsItem(
                 (
-                    s(
-                        1,
-                        10,
-                        Array(
-                            None,
-                            (
+                    (
+                        s(
+                            1,
+                            10,
+                            Array(
+                                None,
                                 (
-                                    s(2, 5, n("1.0")),
-                                    s(5, 6, Spaces()),
-                                    s(6, 9, n("2.3")),
+                                    (
+                                        s(2, 5, n("1.0")),
+                                        s(5, 6, Spaces()),
+                                        s(6, 9, n("2.3")),
+                                    ),
                                 ),
+                                False,
+                                True,
                             ),
-                            False,
-                            True,
                         ),
-                    ),
-                    s(10, 11, Spaces()),
-                    s(
-                        11,
-                        16,
-                        Array(
-                            None,
-                            (
+                        s(10, 11, Spaces()),
+                        s(
+                            11,
+                            16,
+                            Array(
+                                None,
                                 (
-                                    s(12, 13, n("5")),
-                                    s(13, 14, Spaces()),
-                                    s(14, 15, n("6")),
+                                    (
+                                        s(12, 13, n("5")),
+                                        s(13, 14, Spaces()),
+                                        s(14, 15, n("6")),
+                                    ),
                                 ),
+                                False,
+                                True,
                             ),
-                            False,
-                            True,
                         ),
                     ),
                 ),
             ),
-        ),
+        )
     )

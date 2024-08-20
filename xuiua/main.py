@@ -3,6 +3,7 @@ from pathlib import Path
 from xdsl.parser import Input
 
 from xuiua.parser import Parser
+from xuiua.printer import Printer
 
 
 def run_parse(src: Path):
@@ -14,11 +15,9 @@ def run_parse(src: Path):
     parser = Parser(Input(source, str(src)))
     items = parser.parse_items()
 
-    import json
+    printer = Printer()
 
-    print(json.dumps(items))
-
-    print(repr(items))
+    items.print(printer)
 
 
 def run(src: Path):
