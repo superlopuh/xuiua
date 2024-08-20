@@ -1,8 +1,10 @@
 from typing import Any
 
+import pytest
+
 from xdsl.parser import Span
 from xuiua.ast import Array, Number, Spaces, Spanned, WordsItem, Items
-from xuiua.parser import Parser
+from xuiua.parser import ParseError, Parser
 
 
 def test_parse_number():
@@ -88,3 +90,16 @@ def test_parse_items():
             ),
         )
     )
+
+
+def test_empty_words_item():
+    parser = Parser("")
+
+    assert parser.parse_words_item() is None
+
+
+def test_fail():
+    parser = Parser("- [1.0 2.3] [5 6]")
+
+    with pytest.raises(ParseError, match="Could not parse remaining string"):
+        parser.parse_items()

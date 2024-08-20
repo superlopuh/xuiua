@@ -174,13 +174,24 @@ class Parser:
 
     # Items
 
-    def parse_words_item(self) -> WordsItem:
+    def parse_words_item(self) -> WordsItem | None:
+        pos = self.pos
         lines = self.parse_word_lines()
+        if pos == self.pos:
+            # did not make progress
+            return None
         return WordsItem(lines)
 
     def parse_optional_item(self) -> Item | None:
-        if self.remaining:
-            return self.parse_words_item()
+        if not self.remaining:
+            return None
+        pos = self.pos
+        words_item = self.parse_words_item()
+        if pos == self.pos:
+            raise ParseError(
+                self.pos, f"Could not parse remaining string: {self.remaining}"
+            )
+        return words_item
 
     def parse_items(self) -> Items:
         items = self.parse_many(Parser.parse_optional_item)
