@@ -213,6 +213,7 @@ class PrimitiveSpelling(StrEnum):
     """
 
     ADD = "+"
+    DUPLICATE = "."
 
 
 class Primitive(NamedTuple):
