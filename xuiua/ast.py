@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 
+from enum import StrEnum
 from typing import Callable, Generic, NamedTuple, TypeAlias, TypeVar
 from xdsl.parser import Span as CodeSpan
 
@@ -202,7 +203,26 @@ class Spaces(NamedTuple):
         printer.print("<spaces>")
 
 
-Word: TypeAlias = Number | Array | Comment | Spaces
+class PrimitiveSpelling(StrEnum):
+    """
+    from refs.rs
+
+    (2, Add, DyadicPervasive, ("add", '+')),
+
+    First item is the number of inputs, if there are parens then that's the number of outputs.
+    """
+
+    ADD = "+"
+
+
+class Primitive(NamedTuple):
+    spelling: PrimitiveSpelling
+
+    def print(self, printer: Printer):
+        printer.print(self.spelling.name)
+
+
+Word: TypeAlias = Number | Array | Comment | Spaces | Primitive
 
 
 def print_word(word: Word, printer: Printer) -> None:
@@ -227,7 +247,7 @@ def print_word(word: Word, printer: Printer) -> None:
 #     -Array(Arr),
 #     Func(Func),
 #     Pack(FunctionPack),
-#     Primitive(Primitive),
+#     -Primitive(Primitive),
 #     SemicolonPop,
 #     Modified(Box<Modified>),
 #     Placeholder(PlaceholderOp),

@@ -3,7 +3,16 @@ from typing import Any
 import pytest
 
 from xdsl.parser import Span
-from xuiua.ast import Array, Number, Spaces, Spanned, WordsItem, Items
+from xuiua.ast import (
+    Array,
+    Number,
+    Primitive,
+    PrimitiveSpelling,
+    Spaces,
+    Spanned,
+    WordsItem,
+    Items,
+)
 from xuiua.parser import ParseError, Parser
 
 
@@ -103,3 +112,9 @@ def test_fail():
 
     with pytest.raises(ParseError, match="Could not parse remaining string"):
         parser.parse_items()
+
+
+def test_parse_primitive():
+    parser = Parser("+")
+
+    assert parser.parse_optional_primitive() == Primitive(PrimitiveSpelling.ADD)

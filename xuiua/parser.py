@@ -8,6 +8,8 @@ from xuiua.ast import (
     Item,
     Items,
     Number,
+    Primitive,
+    PrimitiveSpelling,
     Spaces,
     Word,
     WordsItem,
@@ -35,6 +37,7 @@ NEWLINE = re.compile(r"\n")
 NOT_NEWLINE = re.compile(r"[^\n]*")
 SPACES = re.compile(r"\s")
 NUMBER = re.compile(r"\d+(\.\d+)?")
+PRIMITIVE = re.compile("|".join(re.escape(p.value) for p in PrimitiveSpelling))
 
 
 class Parser:
@@ -51,7 +54,7 @@ class Parser:
     def remaining(self) -> str:
         return self.input.content[self.pos :]
 
-    # Base parsing functions
+    # region Base parsing functions
 
     def parse_optional_chars(self, chars: str):
         if self.input.content.startswith(chars, self.pos):
@@ -63,7 +66,8 @@ class Parser:
             self.pos = match.regs[0][1]
             return self.input.content[match.pos : self.pos]
 
-    # Helpers
+    # endregion
+    # region: Helpers
 
     def parse_many(self, element: Callable[["Parser"], T | None]) -> tuple[T, ...]:
         if (first := element(self)) is None:
@@ -121,12 +125,18 @@ class Parser:
             span = Span(start, self.pos, self.input)
             return Spanned(res, span)
 
-    # Words
+    # endregion
+    # region: Words
 
     def parse_optional_number(self) -> Number | None:
         if (str_val := self.parse_optional_pattern(NUMBER)) is not None:
             float_val = float(str_val)
             return Number(str_val, float_val)
+
+    def parse_optional_primitive(self) -> Primitive | None:
+        if (prim_val := self.parse_optional_pattern(PRIMITIVE)) is not None:
+            prim = PrimitiveSpelling(prim_val)
+            return Primitive(prim)
 
     def parse_optional_array(self) -> Array | None:
         if self.parse_optional_chars("[") is None:
@@ -172,7 +182,8 @@ class Parser:
         # Skip empty lines
         return tuple(line for line in lines if line)
 
-    # Items
+    # endregion
+    # region: Items
 
     def parse_words_item(self) -> WordsItem | None:
         pos = self.pos
@@ -197,9 +208,12 @@ class Parser:
         items = self.parse_many(Parser.parse_optional_item)
         return Items(items)
 
+    # endregion
+
 
 WORD_PARSERS = (
     Parser.parse_optional_number,
+    Parser.parse_optional_primitive,
     Parser.parse_optional_spaces,
     Parser.parse_optional_array,
     Parser.parse_optional_comment,
