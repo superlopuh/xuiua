@@ -215,6 +215,20 @@ class PrimitiveSpelling(StrEnum):
     ADD = "+"
     DUPLICATE = "."
 
+    def num_inputs(self) -> int:
+        match self:
+            case PrimitiveSpelling.ADD:
+                return 2
+            case PrimitiveSpelling.DUPLICATE:
+                return 1
+
+    def num_outputs(self) -> int:
+        match self:
+            case PrimitiveSpelling.ADD:
+                return 1
+            case PrimitiveSpelling.DUPLICATE:
+                return 2
+
 
 class Primitive(NamedTuple):
     spelling: PrimitiveSpelling
