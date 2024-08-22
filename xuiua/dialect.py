@@ -14,6 +14,7 @@ from xdsl.irdl import (
     operand_def,
     result_def,
 )
+from xdsl.traits import Pure
 
 TI32 = TensorType[I32]
 UTI32 = UnrankedTensorType[I32]
@@ -25,8 +26,8 @@ utf64 = UTF64(f64)
 
 TT = TI32 | TF32
 TTConstr = base(TI32) | base(TF32)
-UTT = UTI32 | UTF32
-UTTConstr = base(UTI32) | base(UTF32)
+UTT = UTI32 | UTF32 | UTF64
+UTTConstr = base(UTI32) | base(UTF32) | base(UTF64)
 UIUATensorType = TT | UTT
 UIUATensorConstr = TTConstr | UTTConstr
 
@@ -61,9 +62,28 @@ class AddOp(IRDLOperation):
         super().__init__(operands=(lhs, rhs), result_types=(result_type,))
 
 
+@irdl_op_definition
+class CastOp(IRDLOperation):
+    name = "uiua.cast"
+    arg = operand_def(UIUATensorConstr)
+    res = result_def(UIUATensorConstr)
+
+    traits = frozenset((Pure(),))
+
+    def __init__(self, arg: SSAValue, res: UIUATensorType | None = None):
+        if res is None:
+            res = utf64
+
+        return super().__init__(
+            operands=[arg],
+            result_types=[res],
+        )
+
+
 UIUA = Dialect(
     "uiua",
     [
         AddOp,
+        CastOp,
     ],
 )

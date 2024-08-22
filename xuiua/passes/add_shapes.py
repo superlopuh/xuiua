@@ -2,7 +2,8 @@ from collections.abc import Sequence
 from dataclasses import dataclass, field
 from xdsl.dialects.builtin import FunctionType, ArrayAttr, ModuleOp
 from xdsl.dialects.func import FuncOp, Return
-from xuiua.dialect import t64
+from xdsl.rewriter import InsertPoint, Rewriter
+from xuiua.dialect import CastOp, t64
 from xdsl.passes import ModulePass
 from xdsl.context import MLContext
 from xdsl.traits import SymbolTable
@@ -20,16 +21,16 @@ def add_shapes(func_op: FuncOp, shapes: Sequence[Sequence[int]]):
     for arg, new_type in zip(body.args, new_inputs, strict=True):
         arg.type = new_type
 
-
-def fix_return_type(func_op: FuncOp) -> None:
-    ftype = func_op.function_type
-    body = func_op.body.block
     return_op = body.last_op
-    assert isinstance(return_op, Return)
-    new_outputs = tuple(return_op.operand_types)
-    func_op.function_type = FunctionType.from_attrs(
-        ftype.inputs, ArrayAttr(new_outputs)
-    )
+    if return_op is None:
+        return
+    assert isinstance(return_op, Return), f"{return_op}"
+
+    cast_ops = tuple(CastOp(operand) for operand in return_op.operands)
+
+    Rewriter.insert_op(cast_ops, InsertPoint.before(return_op))
+
+    return_op.operands = tuple(op.res for op in cast_ops)
 
 
 def parse_shapes_encoding(encoding: str) -> dict[str, tuple[tuple[int, ...], ...]]:
@@ -62,4 +63,3 @@ class AddShapesPass(ModulePass):
             func_op = SymbolTable.lookup_symbol(op, name)
             assert isinstance(func_op, FuncOp)
             add_shapes(func_op, shapes)
-            fix_return_type(func_op)
