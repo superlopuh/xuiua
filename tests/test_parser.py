@@ -3,7 +3,7 @@ from typing import Any
 import pytest
 
 from xdsl.parser import Span
-from xuiua.ast import (
+from xuiua.frontend.ast import (
     Array,
     Number,
     Primitive,
@@ -13,7 +13,7 @@ from xuiua.ast import (
     WordsItem,
     Items,
 )
-from xuiua.parser import ParseError, Parser
+from xuiua.frontend.parser import ParseError, Parser
 
 
 def test_parse_number():

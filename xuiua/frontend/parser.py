@@ -3,7 +3,7 @@ from typing import Any, Callable, Sequence, TypeVar
 from xdsl.parser import Input, Span
 from xdsl.utils.lexer import Position
 
-from xuiua.ast import (
+from xuiua.frontend.ast import (
     BindingItem,
     Comment,
     Item,

@@ -13,7 +13,7 @@ from xdsl.rewriter import InsertPoint, Rewriter
 
 from xuiua.dialect import TF64, UIUA, utf64
 
-from xuiua.ast import (
+from xuiua.frontend.ast import (
     Array,
     BindingItem,
     Comment,
