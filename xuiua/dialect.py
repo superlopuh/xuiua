@@ -31,6 +31,13 @@ UIUATensorType = TT | UTT
 UIUATensorConstr = TTConstr | UTTConstr
 
 
+def t64(*shape: int) -> TF64:
+    """
+    Returns a shaped tensor type of f64 values.
+    """
+    return TensorType(f64, shape)
+
+
 @irdl_op_definition
 class AddOp(IRDLOperation):
     """

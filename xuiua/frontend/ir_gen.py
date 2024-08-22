@@ -1,17 +1,17 @@
 from collections.abc import Iterator
 from contextlib import contextmanager
 from typing import Any, Callable, Sequence, cast
-from xdsl.dialects.builtin import ArrayAttr, FunctionType, ModuleOp, f64
+from xdsl.dialects.builtin import ArrayAttr, FunctionType, ModuleOp
 from xdsl.dialects.arith import Constant
 from xdsl.dialects.func import FuncOp, Return
 
 from xdsl.builder import Builder
 from xdsl.ir import Block, SSAValue
 from xdsl.irdl import IRDLOperation
-from xdsl.parser import DenseIntOrFPElementsAttr, TensorType
+from xdsl.parser import DenseIntOrFPElementsAttr
 from xdsl.rewriter import InsertPoint, Rewriter
 
-from xuiua.dialect import TF64, UIUA, utf64
+from xuiua.dialect import UIUA, utf64, t64
 
 from xuiua.frontend.ast import (
     Array,
@@ -29,11 +29,6 @@ from xuiua.frontend.ast import (
     Word,
     WordsItem,
 )
-
-
-def t64(*shape: int) -> TF64:
-    return TensorType(f64, shape)
-
 
 PRIMITIVE_OPS: dict[str, type[IRDLOperation]] = {
     op.name.split(".", 1)[1]: cast(type[IRDLOperation], op) for op in UIUA.operations
