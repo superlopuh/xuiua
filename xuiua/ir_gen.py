@@ -21,6 +21,7 @@ from xuiua.ast import (
     ModuleItem,
     Number,
     Primitive,
+    PrimitiveSpelling,
     ScopedModule,
     Spaces,
     Spanned,
@@ -73,6 +74,13 @@ class FunctionBuilder:
         return None
 
     def build_primitive(self, primitive: Primitive) -> None:
+        if primitive.spelling is PrimitiveSpelling.IDENTITY:
+            return
+
+        if primitive.spelling is PrimitiveSpelling.DUPLICATE:
+            self.stack.append(self.stack[-1])
+            return
+
         raise NotImplementedError
 
     def build_word(self, word: Word) -> None:
