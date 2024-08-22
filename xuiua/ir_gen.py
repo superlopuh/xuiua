@@ -1,16 +1,17 @@
 from collections.abc import Iterator
 from contextlib import contextmanager
-from typing import Any, Callable
+from typing import Any, Callable, Sequence, cast
 from xdsl.dialects.builtin import ArrayAttr, FunctionType, ModuleOp, f64
 from xdsl.dialects.arith import Constant
 from xdsl.dialects.func import FuncOp, Return
 
 from xdsl.builder import Builder
 from xdsl.ir import Block, SSAValue
+from xdsl.irdl import IRDLOperation
 from xdsl.parser import DenseIntOrFPElementsAttr, TensorType
 from xdsl.rewriter import InsertPoint, Rewriter
 
-from xuiua.dialect import TF64
+from xuiua.dialect import TF64, UIUA, utf64
 
 from xuiua.ast import (
     Array,
@@ -32,6 +33,18 @@ from xuiua.ast import (
 
 def t64(*shape: int) -> TF64:
     return TensorType(f64, shape)
+
+
+PRIMITIVE_OPS: dict[str, type[IRDLOperation]] = {
+    op.name.split(".", 1)[1]: cast(type[IRDLOperation], op) for op in UIUA.operations
+}
+
+
+PRIMITIVE_MAP = {
+    prim: PRIMITIVE_OPS[prim.name.lower()]
+    for prim in PrimitiveSpelling
+    if prim.name.lower() in PRIMITIVE_OPS
+}
 
 
 class FunctionBuilder:
@@ -73,15 +86,40 @@ class FunctionBuilder:
         """
         return None
 
+    def pop_args(self, num: int) -> Sequence[SSAValue]:
+        """
+        Pops the requested number of arguments from the stack, creating new ones if there
+        are not enough values available.
+        """
+        popped = self.stack[-num:]
+        self.stack[-num:] = []
+
+        if len(popped) == num:
+            return popped
+
+        # Not enough values in stack, create in function
+
+        new_vals = list(
+            self.block.insert_arg(utf64, 0) for _ in range(num - len(popped))
+        )
+        new_vals.reverse()
+
+        return new_vals + popped
+
     def build_primitive(self, primitive: Primitive) -> None:
-        if primitive.spelling is PrimitiveSpelling.IDENTITY:
+        spelling = primitive.spelling
+        if spelling is PrimitiveSpelling.IDENTITY:
             return
 
-        if primitive.spelling is PrimitiveSpelling.DUPLICATE:
+        if spelling is PrimitiveSpelling.DUPLICATE:
             self.stack.append(self.stack[-1])
             return
 
-        raise NotImplementedError
+        operands = self.pop_args(spelling.num_inputs())
+        op = PRIMITIVE_MAP[primitive.spelling].build(
+            operands=operands, result_types=(utf64,) * spelling.num_outputs()
+        )
+        self.builder.insert(op)
 
     def build_word(self, word: Word) -> None:
         WORD_BUILDERS[type(word)](self, word)
