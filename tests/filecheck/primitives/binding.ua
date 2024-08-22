@@ -1,5 +1,5 @@
 # RUN: xuiua parse %s | filecheck %s --check-prefix=AST
-# RUN: xuiua lower %s uiua | filecheck %s --check-prefix=IR-GEN
+# RUN: xuiua lower %s | filecheck %s --check-prefix=IR-GEN
 
 NumOne ← 1
 NumTwo ← 2
@@ -12,8 +12,8 @@ NumTwo ← 2
 # AST-NEXT:      array_macro: False,
 # AST-NEXT:      signature: None
 # AST-NEXT:      words: [
-# AST-NEXT:        129-130: <spaces>,
-# AST-NEXT:        130-131: "1",
+# AST-NEXT:        124-125: <spaces>,
+# AST-NEXT:        125-126: "1",
 # AST-NEXT:      ],
 # AST-NEXT:    ),
 # AST-NEXT:    Binding(
@@ -22,8 +22,8 @@ NumTwo ← 2
 # AST-NEXT:      array_macro: False,
 # AST-NEXT:      signature: None
 # AST-NEXT:      words: [
-# AST-NEXT:        140-141: <spaces>,
-# AST-NEXT:        141-142: "2",
+# AST-NEXT:        135-136: <spaces>,
+# AST-NEXT:        136-137: "2",
 # AST-NEXT:      ],
 # AST-NEXT:    ),
 # AST-NEXT:  ]

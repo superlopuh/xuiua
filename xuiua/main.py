@@ -22,10 +22,12 @@ def run_parse(src: Path):
     items.print(printer)
 
 
-def run_lower(src: Path, target: Literal["uiua"]):
+def run_lower(src: Path, passes_str: str | None):
     """
     Prints the IR for the given target
     """
+
+    assert not passes_str
 
     source = open(src).read()
     parser = Parser(Input(source, str(src)))
@@ -55,7 +57,7 @@ def main():
         "lower", help="Lower Uiua to target representation"
     )
     lower_parser.add_argument("src", type=Path, help="Source file to parse")
-    lower_parser.add_argument("target", type=str, choices=["uiua"])
+    lower_parser.add_argument("passes", nargs="?", type=str, default="")
 
     # Run subcommand
     run_parser = subparsers.add_parser("run", help="Compile and run UIUA code")
@@ -66,7 +68,7 @@ def main():
     if args.command == "parse":
         run_parse(args.src)
     elif args.command == "lower":
-        run_lower(args.src, args.target)
+        run_lower(args.src, args.passes)
     elif args.command == "run":
         run(args.src)
 

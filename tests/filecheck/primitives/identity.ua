@@ -1,5 +1,5 @@
 # RUN: xuiua parse %s | filecheck %s --check-prefix=AST
-# RUN: xuiua lower %s uiua | filecheck %s --check-prefix=IR-GEN
+# RUN: xuiua lower %s | filecheck %s --check-prefix=IR-GEN
 
 ∘ 5
 
@@ -7,9 +7,9 @@
 # AST-NEXT:    Words(
 # AST-NEXT:      [
 # AST-NEXT:        [
-# AST-NEXT:          121-122: IDENTITY,
-# AST-NEXT:          122-123: <spaces>,
-# AST-NEXT:          123-124: "5",
+# AST-NEXT:          116-117: IDENTITY,
+# AST-NEXT:          117-118: <spaces>,
+# AST-NEXT:          118-119: "5",
 # AST-NEXT:        ],
 # AST-NEXT:      ]
 # AST-NEXT:    ),

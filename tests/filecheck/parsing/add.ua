@@ -1,5 +1,5 @@
 # RUN: xuiua parse %s | filecheck %s --check-prefix=AST
-# RUN: xuiua lower %s uiua | filecheck %s --check-prefix=IR-GEN
+# RUN: xuiua lower %s | filecheck %s --check-prefix=IR-GEN
 
 Add ← +
 
@@ -10,8 +10,8 @@ Add ← +
 # AST-NEXT:      array_macro: False,
 # AST-NEXT:      signature: None
 # AST-NEXT:      words: [
-# AST-NEXT:        126-127: <spaces>,
-# AST-NEXT:        127-128: ADD,
+# AST-NEXT:        121-122: <spaces>,
+# AST-NEXT:        122-123: ADD,
 # AST-NEXT:      ],
 # AST-NEXT:    ),
 # AST-NEXT:  ]
