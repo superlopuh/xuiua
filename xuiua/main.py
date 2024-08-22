@@ -3,7 +3,7 @@ from typing import Literal
 
 from xdsl.parser import Input
 
-from xuiua.ir_gen import ModuleBuilder
+from xuiua.ir_gen import ModuleBuilder, build_module
 from xuiua.parser import Parser
 from xuiua.printer import Printer
 
@@ -31,7 +31,7 @@ def run_lower(src: Path, target: Literal["uiua"]):
     parser = Parser(Input(source, str(src)))
     items = parser.parse_items()
 
-    module = ModuleBuilder().build_module(items)
+    module = build_module(items)
 
     print(str(module))
 
