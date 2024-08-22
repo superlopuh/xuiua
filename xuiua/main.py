@@ -3,6 +3,7 @@ from pathlib import Path
 from xdsl.context import MLContext
 from xdsl.dialects.builtin import Builtin
 from xdsl.dialects.func import Func
+from xdsl.dialects import test
 from xdsl.parser import Input
 from xdsl.parser import Parser as XDSLParser
 from xdsl.passes import PipelinePass
@@ -38,6 +39,7 @@ def run_lower(src: Path, passes_str: str | None):
     ctx.register_dialect("builtin", lambda: Builtin)
     ctx.register_dialect("func", lambda: Func)
     ctx.register_dialect("uiua", lambda: UIUA)
+    ctx.register_dialect("test", lambda: test.Test)
 
     source = open(src).read()
     match src.suffix:
