@@ -7,10 +7,10 @@ from xdsl.dialects.func import FuncOp, Return
 
 from xdsl.builder import Builder
 from xdsl.ir import Block, SSAValue
-from xdsl.parser import FloatAttr
+from xdsl.parser import DenseIntOrFPElementsAttr, TensorType
 from xdsl.rewriter import InsertPoint, Rewriter
 
-from xuiua.dialect import utf64
+from xuiua.dialect import TF64
 
 from xuiua.ast import (
     Array,
@@ -27,6 +27,10 @@ from xuiua.ast import (
     Word,
     WordsItem,
 )
+
+
+def t64(*shape: int) -> TF64:
+    return TensorType(f64, shape)
 
 
 class FunctionBuilder:
@@ -47,7 +51,9 @@ class FunctionBuilder:
     # region Word
 
     def build_number(self, number: Number) -> None:
-        constant_op = Constant(FloatAttr(number.float_val, f64))
+        constant_op = Constant(
+            DenseIntOrFPElementsAttr.from_list(t64(1), (number.float_val,))
+        )
         self.builder.insert(constant_op)
         self.stack.append(constant_op.result)
 
@@ -85,12 +91,9 @@ class FunctionBuilder:
         )
 
         # Update the function type
-        num_args = len(self.block.args)
-        num_returns = len(self.stack)
-
         self.func_op.function_type = FunctionType.from_attrs(
-            ArrayAttr((utf64,) * num_args),
-            ArrayAttr((utf64,) * num_returns),
+            ArrayAttr(arg.type for arg in self.block.args),
+            ArrayAttr(res.type for res in self.stack),
         )
 
     @contextmanager
