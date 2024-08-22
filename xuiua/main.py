@@ -1,10 +1,14 @@
 from pathlib import Path
-from typing import Literal
 
+from xdsl.context import MLContext
+from xdsl.dialects.builtin import Builtin
+from xdsl.dialects.func import Func
 from xdsl.parser import Input
+from xdsl.parser import Parser as XDSLParser
 
+from xuiua.dialect import UIUA
 from xuiua.frontend.ir_gen import build_module
-from xuiua.frontend.parser import Parser
+from xuiua.frontend.parser import Parser as UIUAParser
 from xuiua.printer import Printer
 
 
@@ -14,7 +18,7 @@ def run_parse(src: Path):
     """
 
     source = open(src).read()
-    parser = Parser(Input(source, str(src)))
+    parser = UIUAParser(Input(source, str(src)))
     items = parser.parse_items()
 
     printer = Printer()
@@ -29,11 +33,22 @@ def run_lower(src: Path, passes_str: str | None):
 
     assert not passes_str
 
-    source = open(src).read()
-    parser = Parser(Input(source, str(src)))
-    items = parser.parse_items()
+    ctx = MLContext()
+    ctx.register_dialect("builtin", lambda: Builtin)
+    ctx.register_dialect("func", lambda: Func)
+    ctx.register_dialect("uiua", lambda: UIUA)
 
-    module = build_module(items)
+    source = open(src).read()
+    match src.suffix:
+        case ".ua":
+            parser = UIUAParser(Input(source, str(src)))
+            items = parser.parse_items()
+            module = build_module(items)
+        case ".mlir":
+            parser = XDSLParser(ctx, source, str(src))
+            module = parser.parse_module()
+        case unknown:
+            raise ValueError(f"Cannot parse file with extension {unknown}")
 
     print(str(module))
 
