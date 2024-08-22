@@ -26,3 +26,14 @@ NumTwo ← 2
 # AST-NEXT:      ],
 # AST-NEXT:    ),
 # AST-NEXT:  ]
+
+# IR-GEN:       builtin.module {
+# IR-GEN-NEXT:    func.func @NumOne() -> tensor<*xf64> {
+# IR-GEN-NEXT:      %0 = arith.constant 1.000000e+00 : f64
+# IR-GEN-NEXT:      func.return %0 : f64
+# IR-GEN-NEXT:    }
+# IR-GEN-NEXT:    func.func @NumTwo() -> tensor<*xf64> {
+# IR-GEN-NEXT:      %0 = arith.constant 2.000000e+00 : f64
+# IR-GEN-NEXT:      func.return %0 : f64
+# IR-GEN-NEXT:    }
+# IR-GEN-NEXT:  }
