@@ -209,10 +209,10 @@ wgpu = ["wgpu (==0.16.0)"]
 [package.source]
 type = "git"
 url = "https://github.com/xdslproject/xdsl.git"
-reference = "sasha/jax/jit"
-resolved_reference = "34d1c598b381a6fbb958e16e363213636279aca7"
+reference = "main"
+resolved_reference = "04fcab76544c9bf6ccf37801077dbef060935e16"
 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "03524aec811d05646d0e43c2c8fa887550940a9cce84ff0f559f8be8e3dd4a9d"
+content-hash = "66ee9c627a57d023dd3edfd78c9babc261ed2f0ccbd797cb516caf4744dc2480"

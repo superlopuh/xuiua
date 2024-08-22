@@ -11,7 +11,7 @@ xuiua = "xuiua.main:main"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-xdsl = { git = "https://github.com/xdslproject/xdsl.git", rev = "sasha/jax/jit" }
+xdsl = { git = "https://github.com/xdslproject/xdsl.git", rev = "main" }
 
 
 [tool.poetry.group.dev.dependencies]
