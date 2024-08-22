@@ -115,6 +115,7 @@ class FunctionBuilder:
             operands=operands, result_types=(utf64,) * spelling.num_outputs()
         )
         self.builder.insert(op)
+        self.stack.extend(op.results)
 
     def build_word(self, word: Word) -> None:
         WORD_BUILDERS[type(word)](self, word)

@@ -17,8 +17,8 @@ Add ← +
 # AST-NEXT:  ]
 
 # IR-GEN:       builtin.module {
-# IR-GEN-NEXT:    func.func @Add(%0 : tensor<*xf64>, %1 : tensor<*xf64>) {
+# IR-GEN-NEXT:    func.func @Add(%0 : tensor<*xf64>, %1 : tensor<*xf64>) -> tensor<*xf64> {
 # IR-GEN-NEXT:      %2 = "uiua.add"(%0, %1) : (tensor<*xf64>, tensor<*xf64>) -> tensor<*xf64>
-# IR-GEN-NEXT:      func.return
+# IR-GEN-NEXT:      func.return %2 : tensor<*xf64>
 # IR-GEN-NEXT:    }
 # IR-GEN-NEXT:  }
