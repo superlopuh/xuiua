@@ -3,7 +3,7 @@ from typing import Literal
 
 from xdsl.parser import Input
 
-from xuiua.ir_gen import ModuleBuilder, build_module
+from xuiua.ir_gen import build_module
 from xuiua.parser import Parser
 from xuiua.printer import Printer
 
