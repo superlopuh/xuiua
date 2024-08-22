@@ -14,7 +14,7 @@ from xdsl.irdl import (
     operand_def,
     result_def,
 )
-from xdsl.traits import Pure
+from xdsl.traits import HasShapeInferencePatternsTrait, Pure
 
 TI32 = TensorType[I32]
 UTI32 = UnrankedTensorType[I32]
@@ -39,6 +39,16 @@ def t64(*shape: int) -> TF64:
     return TensorType(f64, shape)
 
 
+class AddOpHasShapeInferencePatternsTrait(HasShapeInferencePatternsTrait):
+    @classmethod
+    def get_shape_inference_patterns(cls):
+        from xuiua.shape_inference_patterns import (
+            AddOpShapeInferencePattern,
+        )
+
+        return (AddOpShapeInferencePattern(),)
+
+
 @irdl_op_definition
 class AddOp(IRDLOperation):
     """
@@ -52,6 +62,13 @@ class AddOp(IRDLOperation):
     lhs = operand_def(UIUATensorConstr)
     rhs = operand_def(UIUATensorConstr)
     res = result_def(UIUATensorConstr)
+
+    traits = frozenset(
+        (
+            Pure(),
+            AddOpHasShapeInferencePatternsTrait(),
+        )
+    )
 
     def __init__(
         self, lhs: SSAValue, rhs: SSAValue, result_type: Attribute | None = None

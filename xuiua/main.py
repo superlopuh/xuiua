@@ -62,10 +62,6 @@ def run_lower(src: Path, passes_str: str | None):
                 )
             ),
         )
-        ctx = MLContext()
-        ctx.register_dialect("builtin", lambda: Builtin)
-        ctx.register_dialect("func", lambda: Func)
-        ctx.register_dialect("uiua", lambda: UIUA)
         pipeline.apply(ctx, module)
 
     print(str(module))
