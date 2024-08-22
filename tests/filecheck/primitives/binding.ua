@@ -5,10 +5,6 @@ NumTwo ← 2
 # 😀 ← "happy"
 
 # AST:       [
-# AST-NEXT:    Words(
-# AST-NEXT:      [
-# AST-NEXT:      ]
-# AST-NEXT:    ),
 # AST-NEXT:    Binding(
 # AST-NEXT:      name: NumOne,
 # AST-NEXT:      public: True,
@@ -28,9 +24,5 @@ NumTwo ← 2
 # AST-NEXT:        76-77: <spaces>,
 # AST-NEXT:        77-78: "2",
 # AST-NEXT:      ],
-# AST-NEXT:    ),
-# AST-NEXT:    Words(
-# AST-NEXT:      [
-# AST-NEXT:      ]
 # AST-NEXT:    ),
 # AST-NEXT:  ]

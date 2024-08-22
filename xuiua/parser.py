@@ -244,6 +244,9 @@ class Parser:
 
     def parse_items(self) -> Items:
         items = self.parse_many(Parser.parse_optional_item)
+        items = tuple(
+            item for item in items if not isinstance(item, WordsItem) or item.lines
+        )
         return Items(items)
 
     # endregion
