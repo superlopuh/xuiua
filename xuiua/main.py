@@ -5,10 +5,13 @@ from xdsl.dialects.builtin import Builtin
 from xdsl.dialects.func import Func
 from xdsl.parser import Input
 from xdsl.parser import Parser as XDSLParser
+from xdsl.passes import PipelinePass
+from xdsl.utils.parse_pipeline import parse_pipeline
 
 from xuiua.dialect import UIUA
 from xuiua.frontend.ir_gen import build_module
 from xuiua.frontend.parser import Parser as UIUAParser
+from xuiua.passes import AVAILABLE_PASSES
 from xuiua.printer import Printer
 
 
@@ -31,8 +34,6 @@ def run_lower(src: Path, passes_str: str | None):
     Prints the IR for the given target
     """
 
-    assert not passes_str
-
     ctx = MLContext()
     ctx.register_dialect("builtin", lambda: Builtin)
     ctx.register_dialect("func", lambda: Func)
@@ -49,6 +50,21 @@ def run_lower(src: Path, passes_str: str | None):
             module = parser.parse_module()
         case unknown:
             raise ValueError(f"Cannot parse file with extension {unknown}")
+
+    if passes_str:
+        pipeline = PipelinePass(
+            tuple(
+                pass_type.from_pass_spec(spec)
+                for pass_type, spec in PipelinePass.build_pipeline_tuples(
+                    AVAILABLE_PASSES, parse_pipeline(passes_str)
+                )
+            ),
+        )
+        ctx = MLContext()
+        ctx.register_dialect("builtin", lambda: Builtin)
+        ctx.register_dialect("func", lambda: Func)
+        ctx.register_dialect("uiua", lambda: UIUA)
+        pipeline.apply(ctx, module)
 
     print(str(module))
 
