@@ -1,4 +1,11 @@
-from xdsl.dialects.builtin import I32, Float32Type, TensorType, UnrankedTensorType
+from xdsl.dialects.builtin import (
+    I32,
+    Float32Type,
+    Float64Type,
+    TensorType,
+    UnrankedTensorType,
+    f64,
+)
 from xdsl.ir import Attribute, Dialect, SSAValue
 from xdsl.irdl import (
     base,
@@ -12,6 +19,9 @@ TI32 = TensorType[I32]
 UTI32 = UnrankedTensorType[I32]
 TF32 = TensorType[Float32Type]
 UTF32 = UnrankedTensorType[Float32Type]
+TF64 = TensorType[Float64Type]
+UTF64 = UnrankedTensorType[Float64Type]
+utf64 = UTF64(f64)
 
 TT = TI32 | TF32
 TTConstr = base(TI32) | base(TF32)
