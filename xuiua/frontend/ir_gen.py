@@ -121,6 +121,11 @@ class BlockBuilder:
         self.builder.insert(op)
         self.stack.extend(op.results)
 
+    def build_aggregating_modifier(
+        self, spelling: PrimitiveSpelling, operands: Sequence[SSAValue]
+    ) -> None:
+        raise NotImplementedError
+
     def build_primitive(self, primitive: Primitive) -> None:
         spelling = primitive.spelling
         operands = self.pop_args(spelling.num_inputs())
@@ -137,6 +142,8 @@ class BlockBuilder:
         match primitive.spelling.primitive_class():
             case PrimitiveClass.DYADIC_PERVASIVE:
                 self.build_dyadic_pervasive(primitive.spelling, operands)
+            case PrimitiveClass.AGGREGATING_MODIFIER:
+                self.build_aggregating_modifier(primitive.spelling, operands)
             case not_implemented_class:
                 raise NotImplementedError(f"{not_implemented_class}")
 
