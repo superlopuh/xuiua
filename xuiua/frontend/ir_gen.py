@@ -103,14 +103,16 @@ class FunctionBuilder:
 
     def build_primitive(self, primitive: Primitive) -> None:
         spelling = primitive.spelling
+        operands = self.pop_args(spelling.num_inputs())
+
         if spelling is PrimitiveSpelling.IDENTITY:
+            self.stack.extend(operands)
             return
 
         if spelling is PrimitiveSpelling.DUPLICATE:
-            self.stack.append(self.stack[-1])
+            self.stack.extend(operands + operands)
             return
 
-        operands = self.pop_args(spelling.num_inputs())
         op = PRIMITIVE_MAP[primitive.spelling].build(
             operands=operands, result_types=(utf64,) * spelling.num_outputs()
         )
