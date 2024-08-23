@@ -23,6 +23,7 @@ from xuiua.frontend.ast import (
     ModuleItem,
     Number,
     Primitive,
+    PrimitiveClass,
     PrimitiveSpelling,
     ScopedModule,
     Spaces,
@@ -106,6 +107,15 @@ class FunctionBuilder:
 
         return new_vals + popped
 
+    def build_dyadic_pervasive(
+        self, spelling: PrimitiveSpelling, operands: Sequence[SSAValue]
+    ) -> None:
+        op = PRIMITIVE_MAP[spelling].build(
+            operands=operands, result_types=(utf64,) * spelling.num_outputs()
+        )
+        self.builder.insert(op)
+        self.stack.extend(op.results)
+
     def build_primitive(self, primitive: Primitive) -> None:
         spelling = primitive.spelling
         operands = self.pop_args(spelling.num_inputs())
@@ -119,11 +129,11 @@ class FunctionBuilder:
             self.stack.extend(operands)
             return
 
-        op = PRIMITIVE_MAP[primitive.spelling].build(
-            operands=operands, result_types=(utf64,) * spelling.num_outputs()
-        )
-        self.builder.insert(op)
-        self.stack.extend(op.results)
+        match primitive.spelling.primitive_class():
+            case PrimitiveClass.DYADIC_PERVASIVE:
+                self.build_dyadic_pervasive(primitive.spelling, operands)
+            case not_implemented_class:
+                raise NotImplementedError(f"{not_implemented_class}")
 
     def build_word(self, word: Word) -> None:
         WORD_BUILDERS[type(word)](self, word)
