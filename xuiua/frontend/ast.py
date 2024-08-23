@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 
-from enum import StrEnum
+from enum import Enum, StrEnum, auto
 from typing import Callable, Generic, NamedTuple, TypeAlias, TypeVar
 from xdsl.parser import Span as CodeSpan
 
@@ -246,6 +246,26 @@ class Spaces(NamedTuple):
         printer.print("<spaces>")
 
 
+class PrimitiveClass(Enum):
+    STACK = auto()
+    # CONSTANT = auto()
+    DYADIC_PERVASIVE = auto()
+    # MonadicArray,
+    # DyadicArray,
+    # IteratingModifier,
+    AGGREGATING_MODIFIER = auto()
+    # InversionModifier,
+    PLANET = auto()
+    # OtherModifier,
+    # Comptime,
+    # Debug,
+    # Thread,
+    # Map,
+    # Encoding,
+    # Misc,
+    # Sys(SysOpClass)
+
+
 class PrimitiveSpelling(StrEnum):
     """
     from refs.rs
@@ -259,6 +279,7 @@ class PrimitiveSpelling(StrEnum):
     DUPLICATE = "."
     IDENTITY = "∘"
     MULTIPLY = "×"
+    REDUCE = "/"
 
     def num_inputs(self) -> int:
         match self:
@@ -270,6 +291,8 @@ class PrimitiveSpelling(StrEnum):
                 return 1
             case PrimitiveSpelling.MULTIPLY:
                 return 2
+            case PrimitiveSpelling.REDUCE:
+                return 1
 
     def num_outputs(self) -> int:
         match self:
@@ -281,6 +304,21 @@ class PrimitiveSpelling(StrEnum):
                 return 1
             case PrimitiveSpelling.MULTIPLY:
                 return 1
+            case PrimitiveSpelling.REDUCE:
+                return 1
+
+    def primitive_class(self) -> PrimitiveClass:
+        match self:
+            case PrimitiveSpelling.ADD:
+                return PrimitiveClass.DYADIC_PERVASIVE
+            case PrimitiveSpelling.DUPLICATE:
+                return PrimitiveClass.STACK
+            case PrimitiveSpelling.IDENTITY:
+                return PrimitiveClass.PLANET
+            case PrimitiveSpelling.MULTIPLY:
+                return PrimitiveClass.DYADIC_PERVASIVE
+            case PrimitiveSpelling.REDUCE:
+                return PrimitiveClass.AGGREGATING_MODIFIER
 
 
 class Primitive(NamedTuple):
@@ -290,7 +328,30 @@ class Primitive(NamedTuple):
         printer.print(self.spelling.name)
 
 
-Word: TypeAlias = Number | Array | Comment | Spaces | Primitive | Func
+Modifier: TypeAlias = Primitive  # | Ref
+
+
+class Modified(NamedTuple):
+    "A modifier with operands"
+
+    modifier: Modifier
+    "The modifier itself"
+
+    operands: tuple[Spanned[Word], ...]
+    "The operands"
+
+    def print(self, printer: Printer) -> None:
+        self.modifier.print(printer)
+        printer.print("(")
+        with printer.indented():
+            for spanned_word in self.operands:
+                printer.print("\n")
+                spanned_word.value.print(printer)
+                printer.print(",")
+        printer.print("\n)")
+
+
+Word: TypeAlias = Number | Array | Comment | Spaces | Primitive | Func | Modified
 
 
 def print_word(word: Word, printer: Printer) -> None:
@@ -317,7 +378,7 @@ def print_word(word: Word, printer: Printer) -> None:
 #     Pack(FunctionPack),
 #     -Primitive(Primitive),
 #     SemicolonPop,
-#     Modified(Box<Modified>),
+#     -Modified(Box<Modified>),
 #     Placeholder(PlaceholderOp),
 #     StackSwizzle(StackSwizzle),
 #     ArraySwizzle(ArraySwizzle),
