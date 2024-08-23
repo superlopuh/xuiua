@@ -9,8 +9,10 @@ from xuiua.frontend.ast import (
     Func,
     Item,
     Items,
+    Modified,
     Number,
     Primitive,
+    PrimitiveClass,
     PrimitiveSpelling,
     Spaces,
     Word,
@@ -146,10 +148,16 @@ class Parser:
             float_val = float(str_val)
             return Number(str_val, float_val)
 
-    def parse_optional_primitive(self) -> Primitive | None:
-        if (prim_val := self.parse_optional_pattern(PRIMITIVE)) is not None:
-            prim = PrimitiveSpelling(prim_val)
-            return Primitive(prim)
+    def parse_optional_primitive(self) -> Primitive | Modified | None:
+        if (prim_val := self.parse_optional_pattern(PRIMITIVE)) is None:
+            return None
+        prim = PrimitiveSpelling(prim_val)
+        if prim.primitive_class() == PrimitiveClass.AGGREGATING_MODIFIER:
+            # Need to peek ahead
+            self.parse_optional_spaces()
+            word = self.expect("aggregated word", Parser.parse_optional_word)
+            return Modified(Primitive(prim), (word,))
+        return Primitive(prim)
 
     def parse_optional_array(self) -> Array | None:
         if self.parse_optional_chars("[") is None:

@@ -6,8 +6,9 @@
 # AST-NEXT:    Words(
 # AST-NEXT:      [
 # AST-NEXT:        [
-# AST-NEXT:          {{\d+}}-{{\d+}}: REDUCE,
-# AST-NEXT:          {{\d+}}-{{\d+}}: ADD,
+# AST-NEXT:          {{\d+}}-{{\d+}}: REDUCE(
+# AST-NEXT:            ADD,
+# AST-NEXT:          ),
 # AST-NEXT:          {{\d+}}-{{\d+}}: <spaces>,
 # AST-NEXT:          {{\d+}}-{{\d+}}: arr(
 # AST-NEXT:            "1",
