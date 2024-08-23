@@ -140,6 +140,16 @@ class MultiplyOp(IRDLOperation):
         super().__init__(operands=(lhs, rhs), result_types=(result_type,))
 
 
+class ReduceOpHasShapeInferencePatternsTrait(HasShapeInferencePatternsTrait):
+    @classmethod
+    def get_shape_inference_patterns(cls):
+        from xuiua.shape_inference_patterns import (
+            ReduceOpShapeInferencePattern,
+        )
+
+        return (ReduceOpShapeInferencePattern(),)
+
+
 @irdl_op_definition
 class ReduceOp(IRDLOperation):
     """
@@ -154,7 +164,7 @@ class ReduceOp(IRDLOperation):
     res = result_def(UIUATensorConstr)
     body = region_def("single_block")
 
-    traits = frozenset((Pure(),))
+    traits = frozenset((Pure(), ReduceOpHasShapeInferencePatternsTrait()))
 
     def __init__(self, arg: SSAValue, result_type: Attribute, body: Region):
         super().__init__(operands=(arg,), result_types=(result_type,), regions=(body,))
