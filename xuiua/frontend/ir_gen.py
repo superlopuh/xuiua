@@ -17,6 +17,7 @@ from xuiua.frontend.ast import (
     Array,
     BindingItem,
     Comment,
+    Func,
     Item,
     Items,
     ModuleItem,
@@ -68,6 +69,10 @@ class FunctionBuilder:
 
     def build_array(self, array: Array) -> None:
         raise NotImplementedError
+
+    def build_func(self, func: Func) -> None:
+        for line in func.lines:
+            self.build_word_line(line)
 
     def build_comment(self, comment: Comment) -> None:
         """
@@ -142,7 +147,7 @@ class FunctionBuilder:
 
     @contextmanager
     @staticmethod
-    def build_func(module: ModuleOp, name: str) -> Iterator["FunctionBuilder"]:
+    def build_func_op(module: ModuleOp, name: str) -> Iterator["FunctionBuilder"]:
         func_op = FuncOp(name, ((), ()))
         function_builder = FunctionBuilder(module, func_op)
         yield function_builder
@@ -152,6 +157,7 @@ class FunctionBuilder:
 WORD_BUILDERS: dict[type[Word], Callable[[FunctionBuilder, Any], None]] = {
     Number: FunctionBuilder.build_number,
     Array: FunctionBuilder.build_array,
+    Func: FunctionBuilder.build_func,
     Comment: FunctionBuilder.build_comment,
     Spaces: FunctionBuilder.build_spaces,
     Primitive: FunctionBuilder.build_primitive,
@@ -180,7 +186,7 @@ class ModuleBuilder:
             self.main_builder.build_word_line(line)
 
     def build_binding_item(self, binding_item: BindingItem) -> None:
-        with FunctionBuilder.build_func(self.module, binding_item.name) as fb:
+        with FunctionBuilder.build_func_op(self.module, binding_item.name) as fb:
             fb.build_word_line(binding_item.words)
             Rewriter.insert_op(
                 fb.func_op,
