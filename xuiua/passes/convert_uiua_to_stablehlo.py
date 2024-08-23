@@ -10,7 +10,7 @@ from xdsl.pattern_rewriter import (
     PatternRewriter,
     GreedyRewritePatternApplier,
 )
-from xdsl.utils.isa import isa
+from xdsl.utils.hints import isa
 from xdsl.dialects import stablehlo
 
 

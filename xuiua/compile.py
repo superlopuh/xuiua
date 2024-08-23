@@ -1,6 +1,3 @@
-from collections.abc import Callable
-
-import jax
 from xdsl.context import MLContext
 
 from xdsl.dialects.builtin import Builtin
