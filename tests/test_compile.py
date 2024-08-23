@@ -73,3 +73,15 @@ def test_dtype():
     my_jax_array = jnp.array(my_np_array)
 
     assert my_jax_array.dtype == np.float64
+
+
+def test_compile_add():
+    A = a((2, 3, 4, 4.5, 5.5, 6.5)).reshape((2, 3))
+    B = a((6.5, 8.5, 10.5))
+    res0 = A.sum(axis=0)
+
+    assert (res0 == B).all()
+
+    (res,) = run("/+", (A,))
+
+    assert (res == B).all()
