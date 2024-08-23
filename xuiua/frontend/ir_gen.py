@@ -115,7 +115,8 @@ class FunctionBuilder:
             return
 
         if spelling is PrimitiveSpelling.DUPLICATE:
-            self.stack.extend(operands + operands)
+            self.stack.extend(operands)
+            self.stack.extend(operands)
             return
 
         op = PRIMITIVE_MAP[primitive.spelling].build(

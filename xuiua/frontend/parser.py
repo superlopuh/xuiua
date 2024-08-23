@@ -162,7 +162,7 @@ class Parser:
 
         return Array(None, lines, False, True)
 
-    def parse_optional_func(self) -> Array | None:
+    def parse_optional_func(self) -> Func | None:
         if self.parse_optional_chars("(") is None:
             return None
 
