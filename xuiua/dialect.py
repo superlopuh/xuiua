@@ -97,10 +97,51 @@ class CastOp(IRDLOperation):
         )
 
 
+class MultiplyOpHasShapeInferencePatternsTrait(HasShapeInferencePatternsTrait):
+    @classmethod
+    def get_shape_inference_patterns(cls):
+        from xuiua.shape_inference_patterns import (
+            MultiplyOpShapeInferencePattern,
+        )
+
+        return (MultiplyOpShapeInferencePattern(),)
+
+
+@irdl_op_definition
+class MultiplyOp(IRDLOperation):
+    """
+    Multiply values.
+
+    https://www.uiua.org/docs/multiply
+    """
+
+    name = "uiua.multiply"
+
+    lhs = operand_def(UIUATensorConstr)
+    rhs = operand_def(UIUATensorConstr)
+    res = result_def(UIUATensorConstr)
+
+    traits = frozenset(
+        (
+            Pure(),
+            MultiplyOpHasShapeInferencePatternsTrait(),
+        )
+    )
+
+    def __init__(
+        self, lhs: SSAValue, rhs: SSAValue, result_type: Attribute | None = None
+    ):
+        if result_type is None:
+            result_type = lhs.type
+
+        super().__init__(operands=(lhs, rhs), result_types=(result_type,))
+
+
 UIUA = Dialect(
     "uiua",
     [
         AddOp,
         CastOp,
+        MultiplyOp,
     ],
 )

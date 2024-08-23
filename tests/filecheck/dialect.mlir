@@ -8,3 +8,6 @@
 
 // CHECK-NEXT:  %cast = "uiua.cast"(%t) : (tensor<*xf64>) -> tensor<*xf64>
 %cast = "uiua.cast"(%t) : (tensor<*xf64>) -> tensor<*xf64>
+
+// CHECK-NEXT:  %multiply = "uiua.multiply"(%t, %t) : (tensor<*xf64>, tensor<*xf64>) -> tensor<*xf64>
+%multiply = "uiua.multiply"(%t, %t) : (tensor<*xf64>, tensor<*xf64>) -> tensor<*xf64>
