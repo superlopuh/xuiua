@@ -6,6 +6,7 @@ from xdsl.utils.lexer import Position
 from xuiua.frontend.ast import (
     BindingItem,
     Comment,
+    Func,
     Item,
     Items,
     Number,
@@ -161,6 +162,17 @@ class Parser:
 
         return Array(None, lines, False, True)
 
+    def parse_optional_func(self) -> Array | None:
+        if self.parse_optional_chars("(") is None:
+            return None
+
+        # TODO: signature
+        lines = self.parse_word_lines()
+        # TODO: boxed (ragged) array
+        self.expect("close paren", lambda parser: parser.parse_optional_chars(")"))
+
+        return Func(None, lines, True)
+
     def parse_optional_comment(self) -> Comment | None:
         if self.parse_optional_chars("#") is None:
             return None
@@ -253,9 +265,10 @@ class Parser:
 
 
 WORD_PARSERS = (
+    Parser.parse_optional_array,
+    Parser.parse_optional_func,
+    Parser.parse_optional_comment,
     Parser.parse_optional_number,
     Parser.parse_optional_primitive,
     Parser.parse_optional_spaces,
-    Parser.parse_optional_array,
-    Parser.parse_optional_comment,
 )

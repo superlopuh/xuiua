@@ -205,6 +205,32 @@ class Array(NamedTuple):
         printer.print("\n)")
 
 
+class Func(NamedTuple):
+    "An inline function"
+
+    # function_id: FunctionId
+    # "The function's id"
+
+    signature: Spanned[Signature] | None
+    "The function's signature"
+
+    lines: tuple[tuple[Spanned[Word], ...], ...]
+    "The function's code"
+
+    closed: bool
+    "Whether a closing parenthesis was found"
+
+    def print(self, printer: Printer) -> None:
+        printer.print("func(")
+        assert len(self.lines) == 1
+        with printer.indented():
+            for spanned_word in self.lines[0]:
+                printer.print("\n")
+                spanned_word.value.print(printer)
+                printer.print(",")
+        printer.print("\n)")
+
+
 class Comment(NamedTuple):
     value: str
 
@@ -264,7 +290,7 @@ class Primitive(NamedTuple):
         printer.print(self.spelling.name)
 
 
-Word: TypeAlias = Number | Array | Comment | Spaces | Primitive
+Word: TypeAlias = Number | Array | Comment | Spaces | Primitive | Func
 
 
 def print_word(word: Word, printer: Printer) -> None:
@@ -287,7 +313,7 @@ def print_word(word: Word, printer: Printer) -> None:
 #     Strand(Vec<Sp<Word>>),
 #     Undertied(Vec<Sp<Word>>),
 #     -Array(Arr),
-#     Func(Func),
+#     -Func(Func),
 #     Pack(FunctionPack),
 #     -Primitive(Primitive),
 #     SemicolonPop,
