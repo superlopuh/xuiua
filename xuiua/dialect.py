@@ -157,7 +157,7 @@ class ReduceOp(IRDLOperation):
     traits = frozenset((Pure(),))
 
     def __init__(self, arg: SSAValue, result_type: Attribute, body: Region):
-        super().__init__(operands=(arg), result_types=(result_type,), regions=(body,))
+        super().__init__(operands=(arg,), result_types=(result_type,), regions=(body,))
 
     def verify_(self) -> None:
         args = self.body.block.args

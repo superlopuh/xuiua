@@ -6,12 +6,12 @@ from xdsl.dialects.arith import Constant
 from xdsl.dialects.func import FuncOp, Return
 
 from xdsl.builder import Builder
-from xdsl.ir import Block, SSAValue
+from xdsl.ir import Block, Region, SSAValue
 from xdsl.irdl import IRDLOperation
 from xdsl.parser import DenseIntOrFPElementsAttr
 from xdsl.rewriter import InsertPoint, Rewriter
 
-from xuiua.dialect import UIUA, utf64, t64
+from xuiua.dialect import UIUA, YieldOp, utf64, t64
 
 from xuiua.frontend.ast import (
     Array,
@@ -20,6 +20,7 @@ from xuiua.frontend.ast import (
     Func,
     Item,
     Items,
+    Modified,
     ModuleItem,
     Number,
     Primitive,
@@ -126,6 +127,30 @@ class BlockBuilder:
     ) -> None:
         raise NotImplementedError
 
+    def build_modified(self, modified: Modified) -> None:
+        spelling = modified.modifier.spelling
+        operands = self.pop_args(spelling.num_inputs())
+
+        block = Block()
+        region = Region(block)
+
+        inner_builder = BlockBuilder(self.module, block)
+
+        inner_builder.build_word_line(modified.operands)
+
+        Rewriter.insert_op(
+            YieldOp(*inner_builder.stack),
+            InsertPoint.at_end(block),
+        )
+
+        op = PRIMITIVE_MAP[spelling].build(
+            operands=operands,
+            result_types=(utf64,) * spelling.num_outputs(),
+            regions=(region,),
+        )
+        self.builder.insert(op)
+        self.stack.extend(op.results)
+
     def build_primitive(self, primitive: Primitive) -> None:
         spelling = primitive.spelling
         operands = self.pop_args(spelling.num_inputs())
@@ -155,6 +180,7 @@ WORD_BUILDERS: dict[type[Word], Callable[[BlockBuilder, Any], None]] = {
     Comment: BlockBuilder.build_comment,
     Spaces: BlockBuilder.build_spaces,
     Primitive: BlockBuilder.build_primitive,
+    Modified: BlockBuilder.build_modified,
 }
 
 
