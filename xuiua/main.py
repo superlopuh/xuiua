@@ -1,6 +1,5 @@
 from pathlib import Path
 
-from xdsl.context import MLContext
 from xdsl.dialects.builtin import Builtin
 from xdsl.dialects.func import Func
 from xdsl.dialects import test
@@ -9,6 +8,7 @@ from xdsl.parser import Parser as XDSLParser
 from xdsl.passes import PipelinePass
 from xdsl.utils.parse_pipeline import parse_pipeline
 
+from xuiua.compile import get_ctx
 from xuiua.dialect import UIUA
 from xuiua.frontend.ir_gen import build_module
 from xuiua.frontend.parser import Parser as UIUAParser
@@ -35,11 +35,7 @@ def run_lower(src: Path, passes_str: str | None):
     Prints the IR for the given target
     """
 
-    ctx = MLContext()
-    ctx.register_dialect("builtin", lambda: Builtin)
-    ctx.register_dialect("func", lambda: Func)
-    ctx.register_dialect("uiua", lambda: UIUA)
-    ctx.register_dialect("test", lambda: test.Test)
+    ctx = get_ctx()
 
     source = open(src).read()
     match src.suffix:
