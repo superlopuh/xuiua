@@ -44,17 +44,13 @@ PRIMITIVE_MAP = {
 }
 
 
-class FunctionBuilder:
-    module: ModuleOp
-    func_op: FuncOp
+class BlockBuilder:
     builder: Builder
     block: Block
     stack: list[SSAValue]
 
-    def __init__(self, module: ModuleOp, func_op: FuncOp):
-        block = func_op.body.block
+    def __init__(self, module: ModuleOp, block: Block):
         self.module = module
-        self.func_op = func_op
         self.builder = Builder.at_end(block)
         self.block = block
         self.stack = []
@@ -107,6 +103,15 @@ class FunctionBuilder:
 
         return new_vals + popped
 
+    def build_word(self, word: Word) -> None:
+        WORD_BUILDERS[type(word)](self, word)
+
+    # endregion
+
+    def build_word_line(self, spanned_words: tuple[Spanned[Word], ...]):
+        for spanned_word in reversed(spanned_words):
+            self.build_word(spanned_word.value)
+
     def build_dyadic_pervasive(
         self, spelling: PrimitiveSpelling, operands: Sequence[SSAValue]
     ) -> None:
@@ -135,14 +140,25 @@ class FunctionBuilder:
             case not_implemented_class:
                 raise NotImplementedError(f"{not_implemented_class}")
 
-    def build_word(self, word: Word) -> None:
-        WORD_BUILDERS[type(word)](self, word)
 
-    # endregion
+WORD_BUILDERS: dict[type[Word], Callable[[BlockBuilder, Any], None]] = {
+    Number: BlockBuilder.build_number,
+    Array: BlockBuilder.build_array,
+    Func: BlockBuilder.build_func,
+    Comment: BlockBuilder.build_comment,
+    Spaces: BlockBuilder.build_spaces,
+    Primitive: BlockBuilder.build_primitive,
+}
 
-    def build_word_line(self, spanned_words: tuple[Spanned[Word], ...]):
-        for spanned_word in reversed(spanned_words):
-            self.build_word(spanned_word.value)
+
+class FunctionBuilder(BlockBuilder):
+    module: ModuleOp
+    func_op: FuncOp
+
+    def __init__(self, module: ModuleOp, func_op: FuncOp):
+        block = func_op.body.block
+        super().__init__(module, block)
+        self.func_op = func_op
 
     def finalize(self):
         Rewriter.insert_op(
@@ -163,16 +179,6 @@ class FunctionBuilder:
         function_builder = FunctionBuilder(module, func_op)
         yield function_builder
         function_builder.finalize()
-
-
-WORD_BUILDERS: dict[type[Word], Callable[[FunctionBuilder, Any], None]] = {
-    Number: FunctionBuilder.build_number,
-    Array: FunctionBuilder.build_array,
-    Func: FunctionBuilder.build_func,
-    Comment: FunctionBuilder.build_comment,
-    Spaces: FunctionBuilder.build_spaces,
-    Primitive: FunctionBuilder.build_primitive,
-}
 
 
 class ModuleBuilder:
