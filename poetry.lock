@@ -415,7 +415,7 @@ files = [
 
 [[package]]
 name = "xdsl"
-version = "0.21.1+125.gecd4e3a15"
+version = "0.21.1+135.g3aedbc97e"
 description = "xDSL"
 optional = false
 python-versions = ">=3.10"
@@ -430,7 +430,7 @@ ordered-set = "4.1.0"
 typing-extensions = ">=4.7,<4.13"
 
 [package.extras]
-dev = ["asv (<0.7)", "coverage (<8.0.0)", "filecheck (==1.0.0)", "ipykernel", "lit (<19.0.0)", "marimo (==0.7.20)", "nbconvert (>=7.7.2,<8.0.0)", "nbval (<0.12)", "pip (<25.0)", "pre-commit (==3.8.0)", "pyright (==1.1.345)", "pytest (<8.4)", "pytest-asyncio (==0.23.8)", "pytest-cov", "ruff (==0.6.0)", "textual-dev (==1.5.1)", "toml (<0.11)"]
+dev = ["asv (<0.7)", "coverage (<8.0.0)", "filecheck (==1.0.0)", "ipykernel", "lit (<19.0.0)", "marimo (==0.8.0)", "nbconvert (>=7.7.2,<8.0.0)", "nbval (<0.12)", "pip (<25.0)", "pre-commit (==3.8.0)", "pyright (==1.1.345)", "pytest (<8.4)", "pytest-asyncio (==0.24.0)", "pytest-cov", "ruff (==0.6.1)", "textual-dev (==1.5.1)", "toml (<0.11)"]
 gui = ["pyclip (==0.7)", "textual (==0.77.0)"]
 jax = ["jax (==0.4.31)", "numpy (==2.1.0)"]
 onnx = ["numpy (==2.1.0)", "onnx (==1.16.2)"]
@@ -440,10 +440,10 @@ wgpu = ["wgpu (==0.16.0)"]
 [package.source]
 type = "git"
 url = "https://github.com/xdslproject/xdsl.git"
-reference = "main"
-resolved_reference = "ecd4e3a15e4b45351388d1b0f2ebcbb7a86dce7d"
+reference = "sasha/jax/reduce"
+resolved_reference = "3aedbc97e31a0a1120b2cf9d1840c58734064c34"
 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "6ec3d511cf30e34bae6e83e6cebab8d408f7ba20cb17d824725bc2abb312b2e7"
+content-hash = "bbb80fb92f326b63eb10d78682c9b3aeae8d5f3c43492b5b478ad9698faa4881"
