@@ -23,6 +23,8 @@ from xuiua.passes import remove_casts, convert_uiua_to_stablehlo
 from xuiua.passes.add_shapes import add_shapes
 import numpy as np
 
+import time
+
 
 def get_ctx() -> MLContext:
     ctx = MLContext()
@@ -68,6 +70,11 @@ def run(expr: str, inputs: tuple[jax.Array, ...]) -> tuple[jax.Array, ...]:
 
     jax_executable = JaxExecutable.compile(module)
 
+    start_time = time.time()
     result = jax_executable.execute(inputs)
+    end_time = time.time()
+
+    execution_time = end_time - start_time
+    print(execution_time)
 
     return tuple(result)
